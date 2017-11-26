@@ -6,6 +6,6 @@ import ru.atom.matchmaker.model.Game;
 /**
  * Created by Alexandr on 25.11.2017.
  */
-public interface GameDao extends CrudRepository<Game, Integer> {
-    
+public interface GameDao extends CrudRepository<Game, Long> {
+
 }

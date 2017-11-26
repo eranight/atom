@@ -28,7 +28,7 @@ public class MatchmakerComponent {
     private DatabaseService databaseService;
 
     @Value("${maxplayerscount}")
-    private Integer maxPlayersCount;
+    private int maxPlayersCount;
 
     private MatchBuilder currentBuilder;
 
