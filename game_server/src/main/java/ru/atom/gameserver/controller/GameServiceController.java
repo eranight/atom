@@ -39,6 +39,8 @@ public class GameServiceController {
     @ResponseStatus(value = HttpStatus.OK)
     public void startGame(@RequestParam("gameId") long gameId) {
         logger.info("received /game/start request");
-        gameRepository.getGameById(gameId).start();
+        try {
+            gameRepository.getGameById(gameId).start();
+        } catch (Exception e) {}
     }
 }
