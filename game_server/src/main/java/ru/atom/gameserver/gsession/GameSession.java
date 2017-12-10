@@ -1,5 +1,6 @@
 package ru.atom.gameserver.gsession;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.atom.gameserver.component.ConnectionHandler;
@@ -40,15 +41,16 @@ public class GameSession {
     public void start() throws Exception{
         //инициализируем игровой мир
         //создаем стены и коробки
+        int curId = 5; // id с 1 по 4 пока зарезервированы под Pawn'ов
         for (int i = 0; i < 13; i++) {
             for (int j = 0; j < 17; j++) {
-                if (i % 2 == 0 && j % 2 == 0) {
+                if (tileForWall(i, j)) {
                     Wall wall = new Wall(0, createPoint(i, j));
-                    gameMechanics.addGameObject(0, wall);
+                    gameMechanics.addGameObject(curId++, wall);
                 }
-                if (outOfCorners(i, j)) {
+                if (outOfCorners(i, j) && !tileForWall(i, j)) {
                     Box box = new Box(0, createPoint(i, j));
-                    gameMechanics.addGameObject(0, box);
+                    gameMechanics.addGameObject(curId++, box);
                 }
             }
         }
@@ -56,24 +58,46 @@ public class GameSession {
         float velocity = 0.5f;
         Pawn pawn = new Pawn(players.get(0), createPoint(0, 0), velocity, 1);
         logger.info("Initial position of first player: " + pawn.getPosition());
-        gameMechanics.addGameObject(0, pawn);
+        gameMechanics.addGameObject(players.get(0), pawn);
         pawn = new Pawn(players.get(1), createPoint(0, 16), velocity, 1);
-        gameMechanics.addGameObject(0, pawn);
+        gameMechanics.addGameObject(players.get(1), pawn);
         pawn = new Pawn(players.get(2), createPoint(12, 0), velocity, 1);
-        gameMechanics.addGameObject(0, pawn);
+        gameMechanics.addGameObject(players.get(2), pawn);
         pawn = new Pawn(players.get(3), createPoint(12, 16), velocity, 1);
-        gameMechanics.addGameObject(0, pawn);
-
+        gameMechanics.addGameObject(players.get(3), pawn);
 
         //добавим в inputQueue тестирующие сообщения
+        //сначала пробуем тыкнуться в край поля
         Message msgToLeft = new Message(Topic.MOVE, "LEFT", players.get(0));
         inputQueue.offerMessage(msgToLeft);
+        //затем сначала отходим вправо, потом возвращаемся и опять упираемся
         Message msgToRight = new Message(Topic.MOVE, "RIGHT", players.get(0));
         inputQueue.offerMessage(msgToRight);
         inputQueue.offerMessage(msgToRight);
         inputQueue.offerMessage(msgToLeft);
         inputQueue.offerMessage(msgToLeft);
         inputQueue.offerMessage(msgToLeft);
+        //затем пробуем свободно ли сверху (должно быть свободно)
+        Message msgToUp = new Message(Topic.MOVE, "UP", players.get(0));
+        Message msgToDown = new Message(Topic.MOVE, "DOWN", players.get(0));
+        inputQueue.offerMessage(msgToUp);
+        inputQueue.offerMessage(msgToDown);
+        //тоже, но после смещения вправо (должны упереться в верхний Wall)
+        inputQueue.offerMessage(msgToRight);
+        inputQueue.offerMessage(msgToUp);
+        //еще раз (еще упираемся)
+        inputQueue.offerMessage(msgToRight);
+        inputQueue.offerMessage(msgToUp);
+        //и еще (еще упираемся)
+        inputQueue.offerMessage(msgToRight);
+        inputQueue.offerMessage(msgToUp);
+        //и еще (еще упираемся)
+        inputQueue.offerMessage(msgToRight);
+        inputQueue.offerMessage(msgToUp);
+        //и еще (теперь упираемся в Box)
+        inputQueue.offerMessage(msgToRight);
+
+
 
         //бесконечный цикл с оцищением InputQueue каждый фрейм и просчетом механики
         while (true) {
@@ -81,7 +105,9 @@ public class GameSession {
             List messages = inputQueue.pollMessages();
             gameMechanics.doMechanics(messages);
             long endTimePoint = (new Date()).getTime();
-            Thread.sleep(frameTime - (endTimePoint - startTimePoint));
+            long sleepTime = frameTime - (endTimePoint - startTimePoint);
+            if (sleepTime > 0) Thread.sleep(sleepTime);
+            //logger.info("Still alive");
         }
     }
 
@@ -100,5 +126,12 @@ public class GameSession {
                 i == 11 && (j == 0 || j == 15) || i == 12 && (j < 2 || j > 14))
             return false;
         return true;
+    }
+
+    //возвращает true, если здесь должен быть Wall
+    private boolean tileForWall(int i, int j) {
+        if (i % 2 != 0 && j % 2 != 0)
+            return true;
+        return false;
     }
 }

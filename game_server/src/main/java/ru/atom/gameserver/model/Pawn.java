@@ -54,15 +54,15 @@ public class Pawn extends AbstractGameObject implements Movable {
 
     @Override
     public Point move(Direction direction, long time) {
-        logger.info("In move()");
-        Point newPosition = getPosition();
         Point lastPosition = getPosition();
+        Point newPosition;
         float vel = getVelocity();
         switch (direction) {
-            case UP: newPosition = new Point(lastPosition.getX(), lastPosition.getY() + time * vel);
-            case RIGHT: newPosition = new Point(lastPosition.getX() + time * vel, lastPosition.getY());
-            case DOWN: newPosition = new Point(lastPosition.getX(), lastPosition.getY() - time * vel);
-            case LEFT: newPosition = new Point(lastPosition.getX() - time * vel, lastPosition.getY());
+            case UP: newPosition = new Point(lastPosition.getX(), lastPosition.getY() + time * vel); break;
+            case RIGHT: newPosition = new Point(lastPosition.getX() + time * vel, lastPosition.getY()); break;
+            case DOWN: newPosition = new Point(lastPosition.getX(), lastPosition.getY() - time * vel); break;
+            case LEFT: newPosition = new Point(lastPosition.getX() - time * vel, lastPosition.getY()); break;
+            default: newPosition = new Point(lastPosition.getX(), lastPosition.getY());
         }
         return newPosition;
     }

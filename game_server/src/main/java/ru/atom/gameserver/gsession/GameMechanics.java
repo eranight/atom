@@ -46,25 +46,16 @@ public class GameMechanics {
 
             int playerId = msg.getPlayerId();
             //проверяем, был ли данный игрок уже передвинут
-            logger.info("Is there in translated: " + transported.contains(playerId));
             if (transported.contains(playerId)) continue;
-            logger.info("After doubtful if");
+            mapOfObjects.get(playerId);
             Pawn pawn = (Pawn) mapOfObjects.get(playerId);
-            logger.info("After getting pawn");
-            //получим смещенную позицию игрока
-            logger.info("msg.getData(): " + msg.getData());
-            logger.info("in enum form: " + Movable.Direction.valueOf(msg.getData()));
             Point newPoint = pawn.move(Movable.Direction.valueOf(msg.getData()), frameTime);
-            logger.info("After computing of new pawn position");
-            //попытались передвинуть на
-            logger.info("Try to move on " + frameTime * 0.5 + " to " + Movable.Direction.valueOf(msg.getData()));
             //создадим игрока в новой позиции
             Pawn newPawn = new Pawn(pawn.getId(), newPoint, pawn.getVelocity(), pawn.getMaxBombs());
             //проверим выход за границы поля. Для этого создадим Bar с размерами поля
             Bar field = new Bar(0, 0, 17 * 32, 13 * 32);
-            if (!field.isIncluding(newPawn.getBar().getOriginCorner()) ||
-                    !field.isIncluding(newPawn.getBar().getEndCorner())) {
-                collisionOccur = true;
+            if (!field.isIncluding(newPawn.getBar())) {
+                continue;
             }
             Collection<GameObject> collectionOfObjects = mapOfObjects.values();
             Iterator<GameObject> it = collectionOfObjects.iterator();
@@ -72,19 +63,17 @@ public class GameMechanics {
             while (it.hasNext()) {
                 GameObject obj = it.next();
                 if (obj.getClass() == Box.class || obj.getClass() == Wall.class) {
-                    if (pawn.getBar().isColliding(obj.getBar())) {
+                    if (newPawn.getBar().isColliding(obj.getBar())) {
                         collisionOccur = true;
                         break;
                     }
                 }
             }
             if (!collisionOccur) {
-                logger.info("Player " + playerId + " was traslated to " + msg.getData());
                 mapOfObjects.put(playerId, newPawn);
             }
+            logger.info("New position: " + ((Pawn) mapOfObjects.get(playerId)).getPosition());
             //transported.add(playerId);
-            //текущая позиция
-            logger.info("Current position: " + mapOfObjects.get(playerId).getPosition());
         }
     }
 
