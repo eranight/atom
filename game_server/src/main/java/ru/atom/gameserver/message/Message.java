@@ -7,10 +7,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 public class Message {
     private final Topic topic;
     private final String data;
+    private int playerId;
 
-    public Message(Topic topic, String data) {
+    public Message(Topic topic, String data, int playerId) {
         this.topic = topic;
         this.data = data;
+        this.playerId = playerId;
     }
 
     @JsonCreator
@@ -26,4 +28,6 @@ public class Message {
     public String getData() {
         return data;
     }
+
+    public int getPlayerId() { return playerId; }
 }

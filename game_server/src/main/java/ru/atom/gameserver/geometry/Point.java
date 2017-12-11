@@ -42,4 +42,10 @@ public class Point implements Collider {
         Point point = (Point) o;
         return x == point.x && y == point.y;
     }
+
+    @Override
+    public String toString() {
+        String res = "(" + getX() + ", " + getY() + ")";
+        return res;
+    }
 }

@@ -1,6 +1,8 @@
 package ru.atom.gameserver.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.atom.gameserver.geometry.Point;
 
 import java.util.ArrayList;
@@ -10,6 +12,8 @@ import java.util.List;
  * Created by Alexandr on 06.12.2017.
  */
 public class Pawn extends AbstractGameObject implements Movable {
+
+    private static final Logger logger = LoggerFactory.getLogger(Pawn.class);
 
     private float velocity;
     private int maxBombs;
@@ -50,6 +54,16 @@ public class Pawn extends AbstractGameObject implements Movable {
 
     @Override
     public Point move(Direction direction, long time) {
-        return null;
+        Point lastPosition = getPosition();
+        Point newPosition;
+        float vel = getVelocity();
+        switch (direction) {
+            case UP: newPosition = new Point(lastPosition.getX(), lastPosition.getY() + time * vel); break;
+            case RIGHT: newPosition = new Point(lastPosition.getX() + time * vel, lastPosition.getY()); break;
+            case DOWN: newPosition = new Point(lastPosition.getX(), lastPosition.getY() - time * vel); break;
+            case LEFT: newPosition = new Point(lastPosition.getX() - time * vel, lastPosition.getY()); break;
+            default: newPosition = new Point(lastPosition.getX(), lastPosition.getY());
+        }
+        return newPosition;
     }
 }
