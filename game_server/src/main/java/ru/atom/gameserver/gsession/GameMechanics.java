@@ -11,7 +11,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class GameMechanics implements Tickable {
 
-    private int id;
     private final Ticker ticker;
     private final Replicator replicator;
 
@@ -20,7 +19,6 @@ public class GameMechanics implements Tickable {
     private int idGenerator = 0;
 
     GameMechanics(Ticker ticker, Replicator replicator) {
-        id = 0;
         this.ticker = ticker;
         this.replicator = replicator;
         //init walls and boxes here
@@ -56,23 +54,28 @@ public class GameMechanics implements Tickable {
 
     }
 
-    void createBomb(Point point, int lifetime, int power) {
-        Bomb bomb = new Bomb(idGenerator++, point, lifetime, power);
+
+    void createBomb(Point point) {
+        Bomb bomb = new Bomb(idGenerator++, point, 3000, 1);
         gameObjects.add(bomb);
+        ticker.insertTickableFront(bomb);
     }
 
     int addPlayer() {
-        Pawn pawn;
+        int id = idGenerator++;
+        Point point = null;
         switch (pawns.size()){
-            case 0: pawn = new Pawn(idGenerator++, new Point(32, 32), 0.5f, 1); break;
-            case 1: pawn = new Pawn(idGenerator++, new Point(32 * 11, 32), 0.5f, 1); break;
-            case 2: pawn = new Pawn(idGenerator++, new Point(32 * 11, 32 * 15), 0.5f, 1); break;
-            case 3: pawn = new Pawn(idGenerator++, new Point(32, 32 * 15), 0.5f, 1); break;
-            default: pawn = new Pawn(idGenerator++, new Point(32*3, 32*3) , 0.5f, 1);
+            case 0: point = new Point(32.0f, 32.0f); break;
+            case 1: point = new Point(32.0f * 15, 32.0f); break;
+            case 2: point = new Point(32.0f * 11, 32.0f * 11); break;
+            case 3: point = new Point(32.0f * 15, 32.0f * 11); break;
+            default: point = null;
         }
+        Pawn pawn = new Pawn(id, point, 0.5f, 1);
         gameObjects.add(pawn);
-        //add to ticker!
-        return idGenerator++;
+        pawns.add(pawn);
+        ticker.insertTickableFront(pawn);
+        return id;
     }
 
     @Override

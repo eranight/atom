@@ -12,7 +12,7 @@ public class Ticker {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(Ticker.class);
     private static final int FPS = 60;
     private static final long FRAME_TIME = 1000 / FPS;
-    private List<Tickable> tickables = new CopyOnWriteArrayList<>();
+    private final List<Tickable> tickables = new CopyOnWriteArrayList<>();
     private long tickNumber = 0;
     private volatile boolean gameStoped = false;
 
@@ -37,7 +37,11 @@ public class Ticker {
         log.info("stoped ticker");
     }
 
-    public void registerTickable(Tickable tickable) {
+    public void insertTickableFront(Tickable tickable) {
+        tickables.add(0, tickable);
+    }
+
+    public void insertTickable(Tickable tickable) {
         tickables.add(tickable);
     }
 

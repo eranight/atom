@@ -27,7 +27,7 @@ public class GameSession {
         this.playersCnt = playersCnt;
 
         //gameMechanics must be last tickable in the list of tickable
-        ticker.registerTickable(gameMechanics);
+        ticker.insertTickable(gameMechanics);
     }
 
     public MessagesOffering messagesOffering() {
