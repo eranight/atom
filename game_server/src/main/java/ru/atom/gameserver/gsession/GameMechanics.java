@@ -56,8 +56,9 @@ public class GameMechanics implements Tickable {
 
     }
 
-    void createBomb(Point point) {
-        Bomb bomb = new Bomb(idGenerator++, point, 3000, 1);
+    void createBomb(Point point, int lifetime, int power) {
+        Bomb bomb = new Bomb(idGenerator++, point, lifetime, power);
+        gameObjects.add(bomb);
     }
 
     int addPlayer() {
