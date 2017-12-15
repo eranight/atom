@@ -3,6 +3,7 @@ package ru.atom.gameserver.model;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import ru.atom.gameserver.geometry.Bar;
 import ru.atom.gameserver.geometry.Point;
 
 /**
@@ -13,6 +14,7 @@ public abstract class AbstractGameObject implements GameObject {
 
     private final int id;
     private final Point position;
+    private Bar bar;
 
     public AbstractGameObject(int id, Point position) {
         this.id = id;
@@ -27,5 +29,15 @@ public abstract class AbstractGameObject implements GameObject {
     @Override
     public Point getPosition() {
         return position;
+    }
+
+    @Override
+    public Bar getBar() {
+        return bar;
+    }
+
+    @Override
+    public void setBar(Bar bar) {
+        this.bar = bar;
     }
 }

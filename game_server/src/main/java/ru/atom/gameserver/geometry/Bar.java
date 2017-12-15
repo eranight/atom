@@ -21,6 +21,11 @@ public class Bar implements Collider {
         endCorner = new Point(Math.max(firstCornerX, secondCornerX), Math.max(firstCornerY, secondCornerY));
     }
 
+    public Bar(Point point, int width, int height) {
+        originCorner = point;
+        endCorner = new Point(point.getX() + width, point.getY() + height);
+    }
+
     public Point getOriginCorner() {
         return new Point(originCorner.getX(), originCorner.getY());
     }

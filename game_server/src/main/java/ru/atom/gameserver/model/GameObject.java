@@ -1,5 +1,6 @@
 package ru.atom.gameserver.model;
 
+import ru.atom.gameserver.geometry.Bar;
 import ru.atom.gameserver.geometry.Point;
 
 /**
@@ -11,4 +12,7 @@ public interface GameObject {
 
     Point getPosition();
 
+    Bar getBar();
+
+    void setBar(Bar newBar);
 }
