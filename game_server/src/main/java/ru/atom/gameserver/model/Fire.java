@@ -3,6 +3,8 @@ package ru.atom.gameserver.model;
 import ru.atom.gameserver.geometry.Point;
 import ru.atom.gameserver.tick.Tickable;
 
+import java.util.List;
+
 public class Fire extends SaneGameObject implements Tickable {
 
     private long lifetime;
@@ -21,6 +23,11 @@ public class Fire extends SaneGameObject implements Tickable {
         lifetime -= elapsed;
         if (lifetime <= 0) {
             destroy();
+        }
+        //проверяем пересечения с персонажами
+        List<Pawn> vergeOfDeath= modelsManager.getIntersectPawns(getBar());
+        for (Pawn pawn : vergeOfDeath) {
+           pawn.destroy();
         }
     }
 }

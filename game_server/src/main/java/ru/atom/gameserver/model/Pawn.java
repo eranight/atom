@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Created by Alexandr on 06.12.2017.
  */
-public class Pawn extends AbstractGameObject implements Movable {
+public class Pawn extends SaneGameObject implements Movable{
 
     private float velocity;
     private int maxBombs;
