@@ -37,7 +37,7 @@ public class Bomb extends SaneGameObject implements Tickable {
     public void tick(long elapsed) {
         lifetime -= elapsed;
         if (lifetime <= 0) {
-            modelsManager.putFire(getPosition(), 1000, power);
+            modelsManager.putFire(getPosition(), 300, power);
             destroy();
         }
     }
