@@ -13,12 +13,16 @@ import ru.atom.gameserver.geometry.Point;
 public abstract class AbstractGameObject implements GameObject {
 
     private final int id;
-    private final Point position;
+    private  Point position;
     private Bar bar;
 
     public AbstractGameObject(int id, Point position) {
         this.id = id;
         this.position = new Point(position);
+        switch (getClass().getSimpleName()) {
+            case "Pawn": this.bar = new Bar(position, 12, 12); break;
+            default: this.bar = new Bar(position, 32, 32);
+        }
     }
 
     @Override
@@ -39,5 +43,6 @@ public abstract class AbstractGameObject implements GameObject {
     @Override
     public void setBar(Bar bar) {
         this.bar = bar;
+        this.position = bar.getOriginCorner();
     }
 }
