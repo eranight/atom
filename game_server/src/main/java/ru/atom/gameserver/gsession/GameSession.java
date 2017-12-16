@@ -20,8 +20,8 @@ public class GameSession {
     public GameSession(Long gameId, int playersCnt, ConnectionHandler connectionHandler) {
         this.ticker = new Ticker();
         this.replicator = new Replicator(gameId, connectionHandler);
-        this.gameMechanics = new GameMechanics(ticker, replicator);
         this.inputQueue = new InputQueue();
+        this.gameMechanics = new GameMechanics(ticker, replicator, inputQueue);
         this.loginOnIdMap = new HashMap<>();
 
         this.playersCnt = playersCnt;

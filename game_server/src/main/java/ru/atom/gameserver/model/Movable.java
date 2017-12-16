@@ -1,5 +1,6 @@
 package ru.atom.gameserver.model;
 
+import ru.atom.gameserver.geometry.Bar;
 import ru.atom.gameserver.geometry.Point;
 import ru.atom.gameserver.tick.Tickable;
 
@@ -8,7 +9,7 @@ import ru.atom.gameserver.tick.Tickable;
  */
 public interface Movable extends GameObject, Tickable {
 
-    Point move(Direction direction, long time);
+    Bar move(Direction direction, long time);
 
     enum Direction {
         UP, DOWN, RIGHT, LEFT, IDLE

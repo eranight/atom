@@ -1,6 +1,7 @@
 package ru.atom.gameserver.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import ru.atom.gameserver.geometry.Bar;
 import ru.atom.gameserver.geometry.Point;
 
 import java.util.ArrayList;
@@ -15,6 +16,8 @@ public class Pawn extends AbstractGameObject implements Movable {
     private int maxBombs;
     private int bombPower;
     private float speedModifier;
+    private int height = 12;
+    private int width = 12;
     @JsonIgnore
     private List<Bomb> bombs;
 
@@ -49,17 +52,17 @@ public class Pawn extends AbstractGameObject implements Movable {
     }
 
     @Override
-    public Point move(Direction direction, long time) {
-        Point lastPosition = getPosition();
-        Point newPosition;
-        float vel = getVelocity();
+    public Bar move(Direction direction, long time) {
+        float oldPosX = getBar().getOriginCorner().getX();
+        float oldPosY = getBar().getOriginCorner().getY();
+        Bar newBar = null;
+        float delta = getVelocity() * time;
         switch (direction) {
-            case UP: newPosition = new Point(lastPosition.getX(), lastPosition.getY() + time * vel); break;
-            case RIGHT: newPosition = new Point(lastPosition.getX() + time * vel, lastPosition.getY()); break;
-            case DOWN: newPosition = new Point(lastPosition.getX(), lastPosition.getY() - time * vel); break;
-            case LEFT: newPosition = new Point(lastPosition.getX() - time * vel, lastPosition.getY()); break;
-            default: newPosition = new Point(lastPosition.getX(), lastPosition.getY());
+            case UP: newBar = new Bar(new Point(oldPosX, oldPosY + delta), width, height); break;
+            case RIGHT: newBar = new Bar(new Point(oldPosX + delta, oldPosY ), width, height); break;
+            case DOWN: newBar = new Bar(new Point(oldPosX, oldPosY -delta ), width, height); break;
+            case LEFT: newBar = new Bar(new Point(oldPosX -delta, oldPosY ), width, height); break;
         }
-        return newPosition;
+        return newBar;
     }
 }
