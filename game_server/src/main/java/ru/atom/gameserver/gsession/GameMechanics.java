@@ -110,13 +110,16 @@ public class GameMechanics implements Tickable, GarbageCollector, ModelsManager 
                     translated.add(possess);
                     Movable.Direction direction = Movable.Direction.valueOf(jsonNode.get("direction").asText());
                     Pawn pawn = pawns.get(possess);
+                    if (pawn == null) {
+                        break;
+                    }
                     Point prevPos = pawn.getPosition();
                     Point nextPos = pawn.move(direction, elapsed);
                     pawn.setPosition(nextPos);
                     Bar nextBar = pawn.getBar();
                     boolean collision = false;
                     for(GameObject gameObject : gameObjects) {
-                        if (gameObject instanceof Wall || gameObject instanceof Wood || gameObject instanceof Bomb) {
+                        if (gameObject instanceof Wall || gameObject instanceof Wood) {
                             if (nextBar.isColliding(gameObject.getBar())) {
                                 collision = true;
                                 break;
