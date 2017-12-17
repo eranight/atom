@@ -53,6 +53,7 @@ public class ConnectionHandler extends TextWebSocketHandler implements WebSocket
             //matchMakerService.sendGameOver(id, "");
             logger.info("delete game with id=" + id);
         }
+        matchMakerService.disconectionWithPlayer(idLoginPair.getValue());
         logger.info("ws connection has been closed with status code " + status.getCode());
     }
 
@@ -104,4 +105,13 @@ public class ConnectionHandler extends TextWebSocketHandler implements WebSocket
         return new Pair<>(gameId, login);
     }
 
+    public void gameOver(Long gameId, int playerId) {
+        logger.info("In gameOver()");
+        logger.info("Winner: " + playerId);
+        if (playerId != -1) {
+            //узнаем по ид логин победителя
+            String winnerLogin = gameRepository.getGameById(gameId).getPlayerLogin(playerId);
+            matchMakerService.sendGameOver(winnerLogin);
+        }
+    }
 }

@@ -1,10 +1,12 @@
 package ru.atom.gameserver.gsession;
 
+import javafx.util.Pair;
 import ru.atom.gameserver.component.ConnectionHandler;
 import ru.atom.gameserver.tick.Ticker;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class GameSession {
 
@@ -59,6 +61,16 @@ public class GameSession {
         Integer id = loginOnIdMap.remove(login);
         //set pawn with id dead
         return loginOnIdMap.isEmpty();
+    }
+
+    public String getPlayerLogin(int playerId) {
+        Set<Map.Entry<String, Integer>> pairs = loginOnIdMap.entrySet();
+        for (Map.Entry<String, Integer> entry : pairs) {
+            if (entry.getValue() == playerId) {
+                return entry.getKey();
+            }
+        }
+        return null;
     }
 
 }

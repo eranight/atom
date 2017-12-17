@@ -145,6 +145,13 @@ public class GameMechanics implements Tickable, GarbageCollector, ModelsManager 
             gameObjects.remove(gameObject);
         }
         garbageIndexSet.clear();
+
+        //если осталось меньше двух игроков, то завершаем сессию
+        if (pawns.size() < 2) {
+            gameOverFlag = true;
+            ticker.stopGameLoop();
+        }
+
         replicator.writeReplica(gameObjects, gameOverFlag);
     }
 
