@@ -47,13 +47,11 @@ public class ConnectionHandler extends TextWebSocketHandler implements WebSocket
         Long id = idLoginPair.getKey();
         GameSession gameSession = gameRepository.getGameById(id);
         if (gameSession.removePlayer(idLoginPair.getValue())) {
-            //if we are here gameSession is empty, so we should stop it
             gameRepository.deleteGame(id);
             gameSession.stop();
-            //matchMakerService.sendGameOver(id, "");
             logger.info("delete game with id=" + id);
         }
-        matchMakerService.disconectionWithPlayer(idLoginPair.getValue());
+        matchMakerService.disconnectionWithPlayer(idLoginPair.getValue());
         logger.info("ws connection has been closed with status code " + status.getCode());
     }
 
@@ -83,6 +81,13 @@ public class ConnectionHandler extends TextWebSocketHandler implements WebSocket
         }
     }
 
+    public void sendGameOver(Long gameId, int playerId) {
+        if (playerId != -1) {
+            String winnerLogin = gameRepository.getGameById(gameId).getPlayerLogin(playerId);
+            matchMakerService.sendGameOver(winnerLogin);
+        }
+    }
+
     private void sendMessage(WebSocketSession session, Message message) {
         if (session.isOpen()) {
             try {
@@ -105,13 +110,4 @@ public class ConnectionHandler extends TextWebSocketHandler implements WebSocket
         return new Pair<>(gameId, login);
     }
 
-    public void gameOver(Long gameId, int playerId) {
-        logger.info("In gameOver()");
-        logger.info("Winner: " + playerId);
-        if (playerId != -1) {
-            //узнаем по ид логин победителя
-            String winnerLogin = gameRepository.getGameById(gameId).getPlayerLogin(playerId);
-            matchMakerService.sendGameOver(winnerLogin);
-        }
-    }
 }

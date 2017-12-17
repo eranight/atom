@@ -1,12 +1,10 @@
 package ru.atom.gameserver.gsession;
 
-import javafx.util.Pair;
 import ru.atom.gameserver.component.ConnectionHandler;
 import ru.atom.gameserver.tick.Ticker;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 public class GameSession {
 
@@ -53,10 +51,6 @@ public class GameSession {
         }
     }
 
-    /**
-     * @param login
-     * @return true if the last player was been removed from loginOnIdMap
-     */
     public boolean removePlayer(String login) {
         Integer id = loginOnIdMap.remove(login);
         //set pawn with id dead
@@ -64,13 +58,8 @@ public class GameSession {
     }
 
     public String getPlayerLogin(int playerId) {
-        Set<Map.Entry<String, Integer>> pairs = loginOnIdMap.entrySet();
-        for (Map.Entry<String, Integer> entry : pairs) {
-            if (entry.getValue() == playerId) {
-                return entry.getKey();
-            }
-        }
-        return null;
+        return loginOnIdMap.entrySet().stream()
+                .filter(entry -> entry.getValue().equals(playerId))
+                .findFirst().get().getKey();
     }
-
 }

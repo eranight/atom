@@ -3,7 +3,6 @@ package ru.atom.gameserver.model;
 import org.junit.Test;
 import ru.atom.gameserver.geometry.Bar;
 import ru.atom.gameserver.geometry.Point;
-import ru.atom.gameserver.gsession.Replicator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -14,7 +13,7 @@ public class ModelTest {
 
     @Test
     public void pawnCalculateBarTest() {
-        Bar expectedBar = new Bar(0,0,28,28);
+        Bar expectedBar = new Bar(0,0,25,25);
         pawn.calculateBar();
         assertTrue(pawn.getBar().equals(expectedBar));
     }
