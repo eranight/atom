@@ -1,22 +1,19 @@
 package ru.atom.gameserver.component;
 
-import javafx.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketSession;
-import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import ru.atom.gameserver.gsession.GameSession;
 import ru.atom.gameserver.message.Message;
 import ru.atom.gameserver.service.GameRepository;
 import ru.atom.gameserver.service.MatchMakerService;
 import ru.atom.gameserver.util.JsonHelper;
+import ru.atom.gameserver.util.Pair;
 
 import java.io.IOException;
 import java.util.Map;
@@ -35,23 +32,23 @@ public class ConnectionHandler extends TextWebSocketHandler implements WebSocket
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         Pair<Long, String> idLoginPair = getParameters(session.getUri().toString());
-        sessionMap.put(session, idLoginPair.getKey());
-        gameRepository.getGameById(idLoginPair.getKey()).addPlayer(idLoginPair.getValue());
-        logger.info("new ws connection gameid=" + idLoginPair.getKey() + " login=" + idLoginPair.getValue());
+        sessionMap.put(session, idLoginPair.getFirst());
+        gameRepository.getGameById(idLoginPair.getFirst()).addPlayer(idLoginPair.getSecond());
+        logger.info("new ws connection gameid=" + idLoginPair.getFirst() + " login=" + idLoginPair.getSecond());
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         Pair<Long, String> idLoginPair = getParameters(session.getUri().toString());
         sessionMap.remove(session);
-        Long id = idLoginPair.getKey();
+        Long id = idLoginPair.getFirst();
         GameSession gameSession = gameRepository.getGameById(id);
-        if (gameSession.removePlayer(idLoginPair.getValue())) {
+        if (gameSession.removePlayer(idLoginPair.getSecond())) {
             gameRepository.deleteGame(id);
             gameSession.stop();
             logger.info("delete game with id=" + id);
         }
-        matchMakerService.disconnectionWithPlayer(idLoginPair.getValue());
+        matchMakerService.disconnectionWithPlayer(idLoginPair.getSecond());
         logger.info("ws connection has been closed with status code " + status.getCode());
     }
 
@@ -60,7 +57,7 @@ public class ConnectionHandler extends TextWebSocketHandler implements WebSocket
         Message message = JsonHelper.fromJson(textMessage.getPayload(), Message.class);
         gameRepository.getGameById(sessionMap.get(session)).messagesOffering().offerMessage(message);
         Pair<Long, String> idLoginPair = getParameters(session.getUri().toString());
-        //logger.info("text message has been received from " + idLoginPair.getValue());
+        //logger.info("text message has been received from " + idLoginPair.getSecond());
     }
 
     public void sendMessage(long gameId, Message message) {
@@ -74,7 +71,7 @@ public class ConnectionHandler extends TextWebSocketHandler implements WebSocket
     public void sendMessage(long gameId, String login, Message message) {
         for (Map.Entry<WebSocketSession, Long> entry : sessionMap.entrySet()) {
             Pair<Long, String> idLoginPair = getParameters(entry.getKey().getUri().toString());
-            if (entry.getValue().equals(gameId) && idLoginPair.getValue().equals(login)) {
+            if (entry.getValue().equals(gameId) && idLoginPair.getSecond().equals(login)) {
                 sendMessage(entry.getKey(), message);
                 return;
             }
