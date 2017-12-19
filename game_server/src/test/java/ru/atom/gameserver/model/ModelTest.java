@@ -34,12 +34,6 @@ public class ModelTest {
     }
 
     @Test
-    public void grassTest() {
-        Grass grass = new Grass(1, new Point(15, 15));
-        assertTrue(grass.getPosition().equals(new Point(15,15)));
-    }
-
-    @Test
     public void bombTest() {
         Bomb bomb = new Bomb(2, new Point(56, 56), 700, 1);
         bomb.calculateBar();

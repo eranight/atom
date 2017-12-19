@@ -98,19 +98,9 @@ public class Pawn extends SaneGameObject implements Movable {
             default:
                 newPosition = new Point(lastPosition.getX(), lastPosition.getY());
         }
-        Bar currBar = getBar();
         Bar nextBar = getSpecificBar(newPosition);
-        List<GameObject> statics = modelsManager.getIntersectStatic(nextBar);
-        boolean collision = false;
-        for (GameObject gameObject : statics) {
-            if (nextBar.isColliding(gameObject.getBar())) {
-                if (!currBar.isColliding(gameObject.getBar())) {
-                    collision = true;
-                    break;
-                }
-            }
-        }
-        if (!collision) {
+        List<Bar> statics = modelsManager.getIntersectBars(nextBar);
+        if (statics.isEmpty()) {
             setPosition(newPosition);
         }
 

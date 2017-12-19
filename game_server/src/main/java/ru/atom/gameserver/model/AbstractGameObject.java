@@ -13,8 +13,6 @@ import ru.atom.gameserver.geometry.Point;
 @JsonPropertyOrder({"id", "position"})
 public abstract class AbstractGameObject implements GameObject {
 
-    private static final int DEF_SIZE = 32;
-
     private final int id;
     private Point position;
     @JsonIgnore
@@ -53,6 +51,6 @@ public abstract class AbstractGameObject implements GameObject {
 
     @Override
     public void calculateBar() {
-        bar = new Bar(position, DEF_SIZE, DEF_SIZE);
+        bar = new Bar(position);
     }
 }

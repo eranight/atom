@@ -6,8 +6,7 @@ import ru.atom.gameserver.model.Bomb;
 import ru.atom.gameserver.model.Buff;
 import ru.atom.gameserver.model.Fire;
 import ru.atom.gameserver.model.Pawn;
-import ru.atom.gameserver.model.Wall;
-import ru.atom.gameserver.model.Wood;
+import ru.atom.gameserver.model.Box;
 import ru.atom.gameserver.util.JsonHelper;
 
 import static org.junit.Assert.assertEquals;
@@ -27,14 +26,6 @@ public class JsonTest {
     }
 
     @Test
-    public void wallJsonTest() {
-        Wall wall = new Wall(1, new Point(1.0f, 1.0f));
-        String actualString = JsonHelper.getJsonNode(wall).toString();
-        String expectedString = "{\"id\":1,\"position\":{\"x\":1.0,\"y\":1.0}}";
-        assertEquals(expectedString, actualString);
-    }
-
-    @Test
     public void bombJsonTest() {
         Bomb bomb = new Bomb(1, new Point(1.0f, 1.0f), 2000, 2);
         String actualString = JsonHelper.getJsonNode(bomb).toString();
@@ -44,8 +35,8 @@ public class JsonTest {
 
     @Test
     public void woodWithoutBuffJsonTest() {
-        Wood wood = new Wood(1, new Point(1.0f, 1.0f));
-        String actualString = JsonHelper.getJsonNode(wood).toString();
+        Box box = new Box(1, new Point(1.0f, 1.0f));
+        String actualString = JsonHelper.getJsonNode(box).toString();
         String expectedString = "{\"id\":1,\"position\":{\"x\":1.0,\"y\":1.0}}";
         assertEquals(expectedString, actualString);
     }

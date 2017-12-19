@@ -5,6 +5,8 @@ package ru.atom.gameserver.geometry;
  */
 public class Bar implements Collider {
 
+    public static final int DEF_SIZE = 32;
+
     private final Point originCorner;
     private final Point endCorner;
 
@@ -24,6 +26,10 @@ public class Bar implements Collider {
     public Bar(Point point, int width, int height) {
         originCorner = point;
         endCorner = new Point(point.getX() + width, point.getY() + height);
+    }
+
+    public Bar(Point point) {
+        this(point, DEF_SIZE, DEF_SIZE);
     }
 
     public Point getOriginCorner() {

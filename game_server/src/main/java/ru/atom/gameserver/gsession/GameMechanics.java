@@ -8,12 +8,9 @@ import ru.atom.gameserver.model.Bomb;
 import ru.atom.gameserver.model.Buff;
 import ru.atom.gameserver.model.Fire;
 import ru.atom.gameserver.model.GameObject;
-import ru.atom.gameserver.model.Grass;
 import ru.atom.gameserver.model.Movable;
 import ru.atom.gameserver.model.Pawn;
-import ru.atom.gameserver.model.Static;
-import ru.atom.gameserver.model.Wall;
-import ru.atom.gameserver.model.Wood;
+import ru.atom.gameserver.model.Box;
 import ru.atom.gameserver.tick.Tickable;
 import ru.atom.gameserver.tick.Ticker;
 import ru.atom.gameserver.util.JsonHelper;
@@ -27,6 +24,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 public class GameMechanics implements Tickable, GarbageCollector, ModelsManager {
 
@@ -37,6 +35,7 @@ public class GameMechanics implements Tickable, GarbageCollector, ModelsManager 
     private final InputQueue inputQueue;
 
     private final Map<Integer, Pawn> pawns = new HashMap<>();
+    private final List<Bar> barriers = new ArrayList<>();
     private final List<GameObject> gameObjects = new CopyOnWriteArrayList<>();
     private final Set<GameObject> garbageIndexSet = new HashSet<>();
     private int idGenerator = 0;
@@ -56,29 +55,22 @@ public class GameMechanics implements Tickable, GarbageCollector, ModelsManager 
     }
 
     private void initByMap() {
-        List<Wood> woodCollection = new ArrayList<>();
+        List<Box> boxCollection = new ArrayList<>();
         for (int row = 0; row < Field.ROWS; ++row) {
             for (int col = 0; col < Field.COLS; ++col) {
                 Field.Cell cell = new Field.Cell(col, row);
                 int id = nextId();
+                field.setId(cell, id);
                 switch (field.getCellType(cell)) {
                     case Field.WALL: {
-                        field.setId(cell, id);
-                        gameObjects.add(new Wall(id, indexToPoint(col, row)));
-                    }
-                        break;
-                    case Field.EMPTY: {
-                        field.setId(cell, id);
-                        gameObjects.add(new Grass(id, indexToPoint(col, row)));
+                        barriers.add(new Bar(indexToPoint(col, row)));
                     }
                         break;
                     case Field.BOX: {
-                        gameObjects.add(new Grass(id, indexToPoint(col, row)));
-                        id = nextId();
-                        field.setId(cell, id);
-                        Wood wood = new Wood(id, indexToPoint(col, row));
-                        gameObjects.add(wood);
-                        woodCollection.add(wood);
+                        Box box = new Box(id, indexToPoint(col, row));
+                        boxCollection.add(box);
+                        barriers.add(box.getBar());
+                        gameObjects.add(box);
                     }
                         break;
                     default:
@@ -86,11 +78,11 @@ public class GameMechanics implements Tickable, GarbageCollector, ModelsManager 
                 }
             }
         }
-        Collections.shuffle(woodCollection);
+        Collections.shuffle(boxCollection);
         Random rnd = new Random();
         Buff.BuffType[] buffTypes = Buff.BuffType.values();
         for (int i = 0; i < 30; ++i) {
-            woodCollection.get(i).setBuffType(buffTypes[rnd.nextInt(buffTypes.length)]);
+            boxCollection.get(i).setBuffType(buffTypes[rnd.nextInt(buffTypes.length)]);
         }
     }
 
@@ -224,11 +216,14 @@ public class GameMechanics implements Tickable, GarbageCollector, ModelsManager 
         cells = field.applyFireCells(cells);
         for (Field.Cell cell : cells) {
             int id = field.getId(cell);
-            Wood wood = (Wood)gameObjects.stream().filter(g -> g.getId() == id).findFirst().get();
-            if (wood.containsBuff()) {
-                putBonus(wood.getPosition(), wood.getBuffType());
+            Box box = (Box)gameObjects.stream().filter(g -> g.getId() == id).findFirst().get();
+            if (box.containsBuff()) {
+                putBonus(box.getPosition(), box.getBuffType());
             }
-            garbageIndexSet.add(wood);
+            if (barriers.remove(box.getBar())) {
+                System.out.println("removing box's bar");
+            }
+            garbageIndexSet.add(box);
         }
         return fires;
     }
@@ -256,15 +251,7 @@ public class GameMechanics implements Tickable, GarbageCollector, ModelsManager 
     }
 
     @Override
-    public List<GameObject> getIntersectStatic(Bar bar) {
-        List<GameObject> staticObjects = new ArrayList<>();
-        gameObjects.forEach(gameObject -> {
-            if (gameObject instanceof Static) {
-                if (gameObject.getBar().isColliding(bar)) {
-                    staticObjects.add(gameObject);
-                }
-            }
-        });
-        return staticObjects;
+    public List<Bar> getIntersectBars(Bar bar) {
+        return barriers.stream().filter(innerBar -> innerBar.isColliding(bar)).collect(Collectors.toList());
     }
 }

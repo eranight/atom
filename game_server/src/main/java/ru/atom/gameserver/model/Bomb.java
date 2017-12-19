@@ -1,7 +1,5 @@
 package ru.atom.gameserver.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import ru.atom.gameserver.geometry.Bar;
 import ru.atom.gameserver.geometry.Point;
 import ru.atom.gameserver.tick.Tickable;
@@ -9,7 +7,7 @@ import ru.atom.gameserver.tick.Tickable;
 /**
  * Created by Alexandr on 06.12.2017.
  */
-public class Bomb extends SaneGameObject implements Tickable, Static {
+public class Bomb extends SaneGameObject implements Tickable {
 
     private long lifetime;
     private final int power;
