@@ -12,9 +12,14 @@ import java.util.List;
  */
 public class Pawn extends SaneGameObject implements Movable {
 
+    private boolean alive;
+    @JsonIgnore
     private float velocity;
+    @JsonIgnore
     private int maxBombs;
+    @JsonIgnore
     private int bombPower;
+    @JsonIgnore
     private float speedModifier;
     @JsonIgnore
     private List<Bomb> bombs;
@@ -22,6 +27,7 @@ public class Pawn extends SaneGameObject implements Movable {
 
     public Pawn(int id, Point position, float velocity, int maxBombs) {
         super(id, position);
+        this.alive = true;
         this.velocity = velocity;
         this.maxBombs = maxBombs;
         this.bombPower = 1;
@@ -36,6 +42,15 @@ public class Pawn extends SaneGameObject implements Movable {
     @Override
     public void calculateBar() {
         setBar(getSpecificBar(getPosition()));
+    }
+
+    public boolean isAlive() {
+        return alive;
+    }
+
+    public void kill() {
+        alive = false;
+        destroy();
     }
 
     public float getVelocity() {

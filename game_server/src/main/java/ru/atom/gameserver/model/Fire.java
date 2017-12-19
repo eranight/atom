@@ -27,7 +27,7 @@ public class Fire extends SaneGameObject implements Tickable {
         //проверяем пересечения с персонажами
         List<Pawn> vergeOfDeath = modelsManager.getIntersectPawns(getBar());
         for (Pawn pawn : vergeOfDeath) {
-            pawn.destroy();
+            pawn.kill();
         }
     }
 }

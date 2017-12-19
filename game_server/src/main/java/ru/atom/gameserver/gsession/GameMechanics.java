@@ -55,7 +55,9 @@ public class GameMechanics implements Tickable, GarbageCollector, ModelsManager 
     }
 
     private void initByMap() {
-        List<Box> boxCollection = new ArrayList<>();
+        Random rnd = new Random();
+        Buff.BuffType[] buffTypes = Buff.BuffType.values();
+
         for (int row = 0; row < Field.ROWS; ++row) {
             for (int col = 0; col < Field.COLS; ++col) {
                 Field.Cell cell = new Field.Cell(col, row);
@@ -68,7 +70,9 @@ public class GameMechanics implements Tickable, GarbageCollector, ModelsManager 
                         break;
                     case Field.BOX: {
                         Box box = new Box(id, indexToPoint(col, row));
-                        boxCollection.add(box);
+                        if (rnd.nextInt(100) < 16) {
+                            box.setBuffType(buffTypes[rnd.nextInt(buffTypes.length)]);
+                        }
                         barriers.add(box.getBar());
                         gameObjects.add(box);
                     }
@@ -77,12 +81,6 @@ public class GameMechanics implements Tickable, GarbageCollector, ModelsManager 
                         break;
                 }
             }
-        }
-        Collections.shuffle(boxCollection);
-        Random rnd = new Random();
-        Buff.BuffType[] buffTypes = Buff.BuffType.values();
-        for (int i = 0; i < 30; ++i) {
-            boxCollection.get(i).setBuffType(buffTypes[rnd.nextInt(buffTypes.length)]);
         }
     }
 
@@ -94,13 +92,13 @@ public class GameMechanics implements Tickable, GarbageCollector, ModelsManager 
                 point = new Point(DEF_SIZE + 1.0f, DEF_SIZE + 1.0f);
                 break;
             case 1:
-                point = new Point(DEF_SIZE * 15 - 1.0f, DEF_SIZE * 11 - 1.0f);
+                point = new Point(DEF_SIZE * 15 + 1.0f, DEF_SIZE * 11 + 1.0f);
                 break;
             case 2:
-                point = new Point(DEF_SIZE + 1.0f, DEF_SIZE * 11 - 1.0f);
+                point = new Point(DEF_SIZE + 1.0f, DEF_SIZE * 11 + 1.0f);
                 break;
             case 3:
-                point = new Point(DEF_SIZE * 15 - 1.0f, DEF_SIZE + 1.0f);
+                point = new Point(DEF_SIZE * 15 + 1.0f, DEF_SIZE + 1.0f);
                 break;
             default:
                 point = null;
@@ -147,6 +145,12 @@ public class GameMechanics implements Tickable, GarbageCollector, ModelsManager 
             }
         }
 
+        //send replica first cause players have alive flag
+        gameOverFlag = pawns.size() < 2;
+        replicator.writeReplica(gameObjects, gameOverFlag);
+        if (gameOverFlag) {
+            replicator.writeWinner(pawns.isEmpty() ? -1 : pawns.keySet().stream().findFirst().get());
+        }
         for (GameObject gameObject : garbageIndexSet) {
             if (gameObject instanceof Tickable) {
                 ticker.unregisterTickable((Tickable) gameObject);
@@ -157,13 +161,8 @@ public class GameMechanics implements Tickable, GarbageCollector, ModelsManager 
             gameObjects.remove(gameObject);
         }
         garbageIndexSet.clear();
-        if (pawns.size() < 2) {
-            gameOverFlag = true;
-            ticker.stopGameLoop();
-        }
-        replicator.writeReplica(gameObjects, gameOverFlag);
         if (gameOverFlag) {
-            replicator.writeWinner(pawns.isEmpty() ? -1 : pawns.keySet().stream().findFirst().get());
+            ticker.stopGameLoop();
         }
     }
 

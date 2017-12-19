@@ -45,7 +45,7 @@ public class GameSession {
     public void addPlayer(String login) {
         int possess = gameMechanics.addPlayer();
         loginOnIdMap.put(login, possess);
-        replicator.writePossess(possess, login);
+        replicator.writePossess(possess, playersCnt, login);
         if (loginOnIdMap.size() == playersCnt) {
             start();
         }

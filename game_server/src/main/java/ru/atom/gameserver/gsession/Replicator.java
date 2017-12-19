@@ -24,9 +24,12 @@ public class Replicator {
         connectionHandler.sendGameOver(gameId, winnerId);
     }
 
-    public void writePossess(int possess, String login) {
+    public void writePossess(int possess, int playersCount, String login) {
+        ObjectNode objectNode = JsonHelper.nodeFactory.objectNode();
+        objectNode.put("possess", possess);
+        objectNode.put("playersCount", playersCount);
         connectionHandler.sendMessage(gameId, login,
-                new Message(Topic.POSSESS, JsonHelper.nodeFactory.numberNode(possess)));
+                new Message(Topic.POSSESS, objectNode));
     }
 
     public void writeReplica(List<GameObject> objects, boolean gameOverFlag) {
