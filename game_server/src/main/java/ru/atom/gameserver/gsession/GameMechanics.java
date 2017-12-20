@@ -114,8 +114,6 @@ public class GameMechanics implements Tickable, GarbageCollector, ModelsManager 
 
     @Override
     public void tick(long elapsed) {
-        boolean gameOverFlag = false;
-
         Set<Integer> translated = new HashSet<>();
         List<Message> messages = inputQueue.pollMessages();
         for (Message message : messages) {
@@ -146,11 +144,6 @@ public class GameMechanics implements Tickable, GarbageCollector, ModelsManager 
         }
 
         //send replica first cause players have alive flag
-        gameOverFlag = pawns.size() < 2;
-        replicator.writeReplica(gameObjects, gameOverFlag);
-        if (gameOverFlag) {
-            replicator.writeWinner(pawns.isEmpty() ? -1 : pawns.keySet().stream().findFirst().get());
-        }
         for (GameObject gameObject : garbageIndexSet) {
             if (gameObject instanceof Tickable) {
                 ticker.unregisterTickable((Tickable) gameObject);
@@ -161,7 +154,9 @@ public class GameMechanics implements Tickable, GarbageCollector, ModelsManager 
             gameObjects.remove(gameObject);
         }
         garbageIndexSet.clear();
-        if (gameOverFlag) {
+        if (pawns.size() < 2) {
+            replicator.writeGameOver(!pawns.isEmpty(),
+                    pawns.size() == 1 ? pawns.keySet().stream().findFirst().get() : -1);
             ticker.stopGameLoop();
         }
     }

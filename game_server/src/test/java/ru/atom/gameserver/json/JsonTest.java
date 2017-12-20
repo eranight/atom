@@ -21,7 +21,7 @@ public class JsonTest {
         Pawn pawn = new Pawn(1, new Point(1.0f, 1.0f), 1.0f, 1);
         String actualString = JsonHelper.getJsonNode(pawn).toString();
         String expectedString = "{\"id\":1,\"position\":{\"x\":1.0,\"y\":1.0}," +
-                "\"velocity\":1.0,\"maxBombs\":1,\"bombPower\":1,\"speedModifier\":1.0}";
+                "\"alive\":true}";
         assertEquals(expectedString, actualString);
     }
 

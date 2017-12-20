@@ -78,9 +78,10 @@ public class ConnectionHandler extends TextWebSocketHandler implements WebSocket
         }
     }
 
-    public void sendGameOver(Long gameId, int playerId) {
-        if (playerId != -1) {
-            String winnerLogin = gameRepository.getGameById(gameId).getPlayerLogin(playerId);
+    public void sendGameOver(long gameId, int winnerId, Message message) {
+        sendMessage(gameId, message);
+        if (winnerId != -1) {
+            String winnerLogin = gameRepository.getGameById(gameId).getPlayerLogin(winnerId);
             matchMakerService.sendGameOver(winnerLogin);
         }
     }

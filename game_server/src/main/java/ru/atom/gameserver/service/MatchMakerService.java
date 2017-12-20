@@ -30,36 +30,25 @@ public class MatchMakerService {
 
     public void disconnectionWithPlayer(String login) {
         logger.info("Disconnect player with login: " + login);
-
-        Response response = sendRequest(login, mmDisconnect);
-        if (response == null || !response.isSuccessful()) {
-            logger.warn("Send Disconnection error!");
-        } else {
-            response.close();
-        }
+        sendRequest(login, mmDisconnect);
     }
 
     public void sendGameOver(String winnerLogin) {
         logger.info("Winner login: " + winnerLogin);
-
-        Response response = sendRequest(winnerLogin, mmGameOver);
-        if (response == null || !response.isSuccessful()) {
-            logger.warn("Send Game Over error!");
-        }
+        sendRequest(winnerLogin, mmGameOver);
     }
 
-    private Response sendRequest(String login, String urlEnding) {
+    private void sendRequest(String login, String urlEnding) {
         Request request = new Request.Builder()
                 .post(RequestBody.create(mediaType,"login=" + login))
                 .url(mmServer + ":" + port + urlEnding)
                 .build();
-        Response response = null;
-        try {
-            response = client.newCall(request).execute();
+        try (Response response = client.newCall(request).execute()) {
+            logger.info("send request successful!");
         } catch (IOException e) {
-            logger.info(e.getMessage());
+            logger.warn("IOEXception: " + e.getMessage());
+        } catch (Exception e) {
+            logger.warn("Uknowned excetrion:" + e.getMessage());
         }
-        return response;
     }
-
 }

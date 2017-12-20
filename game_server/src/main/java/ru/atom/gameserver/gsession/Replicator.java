@@ -20,10 +20,6 @@ public class Replicator {
         this.connectionHandler = connectionHandler;
     }
 
-    public void writeWinner(Integer winnerId) {
-        connectionHandler.sendGameOver(gameId, winnerId);
-    }
-
     public void writePossess(int possess, int playersCount, String login) {
         ObjectNode objectNode = JsonHelper.nodeFactory.objectNode();
         objectNode.put("possess", possess);
@@ -36,6 +32,14 @@ public class Replicator {
         ObjectNode node = getJsonNode(objects, gameOverFlag);
         Message message = new Message(Topic.REPLICA, node);
         connectionHandler.sendMessage(gameId, message);
+    }
+
+    public void writeGameOver(boolean hasWinner, Integer winnerId) {
+        ObjectNode objectNode = JsonHelper.nodeFactory.objectNode();
+        objectNode.put("hasWinner", hasWinner);
+        objectNode.put("possess", winnerId);
+        connectionHandler.sendGameOver(gameId, hasWinner ? winnerId : -1,
+                new Message(Topic.END_MATCH, objectNode));
     }
 
     private ObjectNode getJsonNode(List<GameObject> objects, boolean gameOverFlag) {
