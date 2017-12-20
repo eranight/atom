@@ -154,6 +154,7 @@ public class GameMechanics implements Tickable, GarbageCollector, ModelsManager 
             gameObjects.remove(gameObject);
         }
         garbageIndexSet.clear();
+        replicator.writeReplica(gameObjects);
         if (pawns.size() < 2) {
             replicator.writeGameOver(!pawns.isEmpty(),
                     pawns.size() == 1 ? pawns.keySet().stream().findFirst().get() : -1);

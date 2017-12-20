@@ -28,8 +28,8 @@ public class Replicator {
                 new Message(Topic.POSSESS, objectNode));
     }
 
-    public void writeReplica(List<GameObject> objects, boolean gameOverFlag) {
-        ObjectNode node = getJsonNode(objects, gameOverFlag);
+    public void writeReplica(List<GameObject> objects) {
+        ObjectNode node = getJsonNode(objects);
         Message message = new Message(Topic.REPLICA, node);
         connectionHandler.sendMessage(gameId, message);
     }
@@ -42,7 +42,7 @@ public class Replicator {
                 new Message(Topic.END_MATCH, objectNode));
     }
 
-    private ObjectNode getJsonNode(List<GameObject> objects, boolean gameOverFlag) {
+    private ObjectNode getJsonNode(List<GameObject> objects) {
         ObjectNode rootObject = JsonHelper.nodeFactory.objectNode();
         ArrayNode jsonArrayNode = rootObject.putArray("objects");
         for (GameObject object : objects) {
@@ -50,7 +50,6 @@ public class Replicator {
             jsonObject.put("type", object.getClass().getSimpleName());
             jsonArrayNode.add(jsonObject);
         }
-        rootObject.put("gameOver", gameOverFlag);
         return rootObject;
     }
 }
