@@ -144,6 +144,7 @@ public class GameMechanics implements Tickable, GarbageCollector, ModelsManager 
         }
 
         //send replica first cause players have alive flag
+        replicator.writeReplica(gameObjects);
         for (GameObject gameObject : garbageIndexSet) {
             if (gameObject instanceof Tickable) {
                 ticker.unregisterTickable((Tickable) gameObject);
@@ -154,7 +155,6 @@ public class GameMechanics implements Tickable, GarbageCollector, ModelsManager 
             gameObjects.remove(gameObject);
         }
         garbageIndexSet.clear();
-        replicator.writeReplica(gameObjects);
         if (pawns.size() < 2) {
             replicator.writeGameOver(!pawns.isEmpty(),
                     pawns.size() == 1 ? pawns.keySet().stream().findFirst().get() : -1);

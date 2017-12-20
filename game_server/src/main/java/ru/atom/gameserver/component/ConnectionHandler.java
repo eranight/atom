@@ -55,9 +55,10 @@ public class ConnectionHandler extends TextWebSocketHandler implements WebSocket
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage textMessage) throws Exception {
         Message message = JsonHelper.fromJson(textMessage.getPayload(), Message.class);
-        gameRepository.getGameById(sessionMap.get(session)).messagesOffering().offerMessage(message);
-        Pair<Long, String> idLoginPair = getParameters(session.getUri().toString());
-        //logger.info("text message has been received from " + idLoginPair.getSecond());
+        GameSession gameSession = gameRepository.getGameById(sessionMap.get(session));
+        if (gameSession != null) {
+            gameSession.messagesOffering().offerMessage(message);
+        }
     }
 
     public void sendMessage(long gameId, Message message) {
