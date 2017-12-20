@@ -215,9 +215,7 @@ public class GameMechanics implements Tickable, GarbageCollector, ModelsManager 
             if (box.containsBuff()) {
                 putBonus(box.getPosition(), box.getBuffType());
             }
-            if (barriers.remove(box.getBar())) {
-                System.out.println("removing box's bar");
-            }
+            barriers.remove(box.getBar());
             garbageIndexSet.add(box);
         }
         return fires;

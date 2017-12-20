@@ -82,7 +82,20 @@ public class ConnectionHandler extends TextWebSocketHandler implements WebSocket
         sendMessage(gameId, message);
         if (winnerId != -1) {
             String winnerLogin = gameRepository.getGameById(gameId).getPlayerLogin(winnerId);
+            sessionMap.forEach((ws, id) -> {
+                if (id.equals(gameId)) {
+                    if (ws.isOpen()) {
+                        try {
+                            ws.close(CloseStatus.NORMAL);
+                        } catch (IOException e) {
+                            logger.warn(e.getMessage());
+                        }
+                    }
+                }
+            });
             matchMakerService.sendGameOver(winnerLogin);
+            gameRepository.deleteGame(gameId);
+            logger.info("delete game with id=" + gameId);
         }
     }
 
